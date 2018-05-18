@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                  http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                                http://www.springframework.org/schema/context
+                               http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                                  http://www.springframework.org/schema/mvc
+                              http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                              http://www.springframework.org/schema/task
+                                  http://www.springframework.org/schema/task/spring-task-3.1.xsd ">
+    <!-- 自动扫描 -->
+    <context:component-scan base-package="com.fun4g.riqin"/>
+
+    <!--<context:component-scan base-package="com.fun4g.riqin.task"/>
+-->
+
+    <!--指明 controller 所在包，并扫描其中的注解-->
+   <!-- <context:component-scan base-package="com.fun4g.riqin.controller"/>-->
+    <!-- 静态资源(js、image等)的访问 -->
+    <mvc:default-servlet-handler/>
+
+
+    <mvc:annotation-driven/>
+
+    <context:annotation-config />
+
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
+    <!--ViewResolver 视图解析器-->
+    <!--用于支持Servlet、JSP视图解析-->
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*" />
+            <bean class="com.fun4g.riqin.util.SecurityInterceptor">
+                <property name="excludedUrls">
+                    <list>
+                        <value>/wx_login</value>
+                        <value>/bindUserSubmit</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+    <!-- 引入配置文件 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties"/>
+    </bean>
+
+    <bean id="dataSource"
+          class="com.zaxxer.hikari.HikariDataSource" destroy-method="shutdown">
+        <constructor-arg>
+            <bean class="com.zaxxer.hikari.HikariConfig">
+                <property name="driverClassName" value="${hikaricp.jdbc.driverClassName}"/>
+                <property name="jdbcUrl" value="${hikaricp.url}"/>
+                <property name="username" value="${hikaricp.username}"/>
+                <property name="password" value="${hikaricp.password}"/>
+                <property name="connectionTestQuery" value="${hikaricp.connectionTestQuery}"/>
+                <property name="connectionTimeout" value="${hikaricp.connectionTimeout}"/>
+                <property name="idleTimeout" value="${hikaricp.idleTimeout}"/>
+                <property name="maxLifetime" value="${hikaricp.maxLifetime}"/>
+                <property name="maximumPoolSize" value="${hikaricp.maximumPoolSize}"/>
+                <property name="minimumIdle" value="${hikaricp.minimumIdle}"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <!--
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+
+
+        <property name="initialSize" value="1"/>
+        <property name="minIdle" value="1"/>
+        <property name="maxActive" value="20"/>
+
+
+        <property name="maxWait" value="60000"/>
+
+
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+
+
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+
+
+        <property name="filters" value="stat"/>
+    </bean>-->
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="mapperLocations" value="classpath*:com/fun4g/riqin/mapping/*.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <bean id="iuserMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.fun4g.riqin.iDao.IuserMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+    <bean id="jobMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    <property name="mapperInterface" value="com.fun4g.riqin.iDao.JobMapper"/>
+    <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+</bean>
+    <bean id="tipsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.fun4g.riqin.iDao.TipsMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+    <bean id="jobBackupMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.fun4g.riqin.iDao.JobBackupMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+   <bean id="mytaskMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.fun4g.riqin.iDao.MytaskMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+    <bean id="sourceMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.fun4g.riqin.iDao.SourceMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+
+
+    <bean id="mainController" class="com.fun4g.riqin.controller.MainController">
+        <property name="jobMapper" ref="jobMapper"></property>
+        <property name="iuserMapper" ref="iuserMapper"></property>
+        <property name="sourceMapper" ref="sourceMapper"></property>
+        <property name="jobBackupMapper" ref="jobBackupMapper"></property>
+        <property name="tipsMapper" ref="tipsMapper"></property>
+    </bean>
+
+    <bean id="myTestServiceImpl" class="com.fun4g.riqin.task.MyTestServiceImpl">
+        <property name="mytaskMapper" ref="mytaskMapper"></property>
+        <property name="tipsMapper" ref="tipsMapper"></property>
+    </bean>
+
+
+
+    <!-- 邮件发送器 163  -->
+  <!--  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${mail.host}" />
+        <property name="username" value="${mail.username}" />
+        <property name="password" value="${mail.password}" />
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+                <prop key="mail.smtp.timeout">${mail.smtp.timeout}</prop>
+
+            </props>
+        </property>
+    </bean>-->
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="smtp.gmail.com" />
+        <property name="port" value="587" />
+        <property name="username" value="scottsun.nj@gmail.com" />
+        <property name="password" value="szq041251116" />
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.auth">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="attachedFileMail" class="com.fun4g.riqin.mail.AttachedFileMail">
+         <property name="senderImpl" ref="mailSender"></property>
+
+    </bean>
+
+</beans>

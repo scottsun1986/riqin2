@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fun4g.riqin.iDao.JobBackupMapper" >
+  <resultMap id="BaseResultMap" type="com.fun4g.riqin.model.JobBackup" >
+    <id column="job_back_id" property="jobBackId" jdbcType="INTEGER" />
+    <result column="job_id" property="jobId" jdbcType="INTEGER" />
+    <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+    <result column="creator_id" property="creatorId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="job_comment" property="jobComment" jdbcType="VARCHAR" />
+    <result column="is_single" property="isSingle" jdbcType="TINYINT" />
+    <result column="is_important" property="isImportant" jdbcType="TINYINT" />
+    <result column="required_time" property="requiredTime" jdbcType="TIMESTAMP" />
+    <result column="cycle" property="cycle" jdbcType="VARCHAR" />
+    <result column="job_handler_id" property="jobHandlerId" jdbcType="VARCHAR" />
+    <result column="job_type" property="jobType" jdbcType="VARCHAR" />
+    <result column="job_group_id" property="jobGroupId" jdbcType="INTEGER" />
+    <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
+    <result column="job_feedback" property="jobFeedback" jdbcType="VARCHAR" />
+    <result column="backup_time" property="backupTime" jdbcType="TIMESTAMP" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="MoreDetailResultMap" type="com.fun4g.riqin.model.JobBackup" >
+    <id column="job_back_id" property="jobBackId" jdbcType="INTEGER" />
+    <result column="job_id" property="jobId" jdbcType="INTEGER" />
+    <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+    <result column="creator_id" property="creatorId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="job_comment" property="jobComment" jdbcType="VARCHAR" />
+    <result column="is_single" property="isSingle" jdbcType="TINYINT" />
+    <result column="is_important" property="isImportant" jdbcType="TINYINT" />
+    <result column="required_time" property="requiredTime" jdbcType="TIMESTAMP" />
+    <result column="cycle" property="cycle" jdbcType="VARCHAR" />
+    <result column="job_handler_id" property="jobHandlerId" jdbcType="VARCHAR" />
+    <result column="job_type" property="jobType" jdbcType="VARCHAR" />
+    <result column="job_group_id" property="jobGroupId" jdbcType="INTEGER" />
+    <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
+    <result column="job_feedback" property="jobFeedback" jdbcType="VARCHAR" />
+    <result column="backup_time" property="backupTime" jdbcType="TIMESTAMP" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+    <association javaType="com.fun4g.riqin.model.Source" property="source">
+
+      <id column="source_id" jdbcType="INTEGER" property="sourceId"/>
+      <result column="source" jdbcType="VARCHAR" property="name"/>
+
+    </association>
+  </resultMap>
+  <resultMap id="DetailResultMap" type="com.fun4g.riqin.model.JobBackup" >
+    <id column="job_back_id" property="jobBackId" jdbcType="INTEGER" />
+        <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+
+    <result column="job_comment" property="jobComment" jdbcType="VARCHAR" />
+    <result column="job_feedback" property="jobFeedback" jdbcType="VARCHAR" />
+    <result column="job_handler_id" property="jobHandlerId" jdbcType="VARCHAR" />
+    <result column="job_type" property="jobType" jdbcType="VARCHAR" />
+
+    <result column="job_status" property="jobStatus" jdbcType="INTEGER" />
+    <result column="is_important" property="isImportant" jdbcType="TINYINT" />
+    <result column="backup_time" property="backupTime" jdbcType="TIMESTAMP" />
+    <association javaType="com.fun4g.riqin.model.Iuser" property="jobHandler">
+
+      <id column="job_handler_id" jdbcType="INTEGER" property="id"/>
+      <result column="name" jdbcType="VARCHAR" property="name"/>
+
+    </association>
+
+    <association javaType="com.fun4g.riqin.model.Source" property="source">
+
+      <id column="source_id" jdbcType="INTEGER" property="sourceId"/>
+      <result column="source" jdbcType="VARCHAR" property="name"/>
+
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    job_back_id, job_id, source_id, creator_id, create_time, job_comment, is_single, 
+    required_time, cycle, job_handler_id, job_type, job_group_id, job_status, job_feedback, 
+    backup_time, finish_time,is_important
+  </sql>
+  <select id="selectByBackupTime" resultMap="DetailResultMap">
+    SELECT a.job_back_id,a.job_handler_id,h.name,a.job_status,a.job_comment,a.is_important,a.job_feedback,a.job_type,a.source_id,s.name as source,DATE_FORMAT( date_add( a.backup_time, interval -1 day),'%Y-%m-%d')  as backup_time FROM `job_backup` a join iuser h on a.job_handler_id=h.id join source s on a.source_id=s.source_id
+
+ <where>
+   <if test="backup_time_f != null and backup_time_t!=null">
+     and (a.backup_time &gt;= #{backup_time_f} and a.backup_time
+     &lt; #{backup_time_t})
+   </if>
+     and h.valid=1
+</where>
+
+
+    ORDER BY  CONVERT( a.job_type USING gbk ) COLLATE gbk_chinese_ci desc, CONVERT( h.name USING gbk ) COLLATE gbk_chinese_ci asc, DATE_FORMAT(a.backup_time,'%Y-%m-%d') desc,s.source_id desc
+
+  </select>
+
+
+  <select id="selectBySearch" resultMap="DetailResultMap">
+    SELECT a.job_back_id,a.job_handler_id,h.name,a.job_status,a.job_comment,a.is_important,a.job_feedback,a.job_type,a.source_id,s.name as source,DATE_FORMAT( date_add( a.backup_time, interval -1 day),'%Y-%m-%d')  as backup_time FROM `job_backup` a join iuser h on a.job_handler_id=h.id join source s on a.source_id=s.source_id
+
+    <where>
+      <if test="backup_time_f != null and backup_time_t!=null">
+        and (a.backup_time &gt;= #{backup_time_f} and a.backup_time
+        &lt; #{backup_time_t})
+      </if>
+      <if test="is_important==1">
+        and a.is_important=1
+      </if>
+      <if test="keywd!=null">
+        and (a.job_comment like CONCAT('%',#{keywd},'%') or a.job_feedback like CONCAT('%',#{keywd},'%')  or h.name =#{keywd})
+      </if>
+
+    </where>
+
+
+    ORDER BY
+    <if test="is_order_by_time==1">
+      DATE_FORMAT(a.backup_time,'%Y-%m-%d') desc, CONVERT( h.name USING gbk ) COLLATE gbk_chinese_ci asc,a.job_type desc,s.source_id desc
+    </if>
+    <if test="is_order_by_time==0">
+      CONVERT( h.name USING gbk ) COLLATE gbk_chinese_ci asc,DATE_FORMAT(a.backup_time,'%Y-%m-%d') desc, a.job_type desc,s.source_id desc
+    </if>
+
+
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from job_backup
+    where job_back_id = #{jobBackId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from job_backup
+    where job_back_id = #{jobBackId,jdbcType=INTEGER}
+  </delete>
+
+
+  <select id="selectMoreDetailByPrimaryKey" resultMap="MoreDetailResultMap" parameterType="java.lang.Integer" >
+    select
+    a.*,s.name as source
+    from job_backup a   join source s on a.source_id=s.source_id
+    where a.job_back_id = #{jobBackId,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.fun4g.riqin.model.JobBackup" >
+    insert into job_backup (job_back_id, job_id, source_id, 
+      creator_id, create_time, job_comment, 
+      is_single, is_important,required_time, cycle,
+      job_handler_id, job_type, job_group_id, 
+      job_status, job_feedback, backup_time, 
+      finish_time)
+    values (#{jobBackId,jdbcType=INTEGER}, #{jobId,jdbcType=INTEGER}, #{sourceId,jdbcType=INTEGER}, 
+      #{creatorId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{jobComment,jdbcType=VARCHAR}, 
+      #{isSingle,jdbcType=TINYINT},#{isImportant,jdbcType=TINYINT}, #{requiredTime,jdbcType=TIMESTAMP}, #{cycle,jdbcType=VARCHAR},
+      #{jobHandlerId,jdbcType=VARCHAR}, #{jobType,jdbcType=VARCHAR}, #{jobGroupId,jdbcType=INTEGER}, 
+      #{jobStatus,jdbcType=INTEGER}, #{jobFeedback,jdbcType=VARCHAR}, #{backupTime,jdbcType=TIMESTAMP}, 
+      #{finishTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fun4g.riqin.model.JobBackup" >
+    insert into job_backup
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="jobBackId != null" >
+        job_back_id,
+      </if>
+      <if test="jobId != null" >
+        job_id,
+      </if>
+      <if test="sourceId != null" >
+        source_id,
+      </if>
+      <if test="creatorId != null" >
+        creator_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="jobComment != null" >
+        job_comment,
+      </if>
+      <if test="isSingle != null" >
+        is_single,
+      </if>
+      <if test="isImportant != null" >
+        is_important,
+      </if>
+      <if test="requiredTime != null" >
+        required_time,
+      </if>
+      <if test="cycle != null" >
+        cycle,
+      </if>
+      <if test="jobHandlerId != null" >
+        job_handler_id,
+      </if>
+      <if test="jobType != null" >
+        job_type,
+      </if>
+      <if test="jobGroupId != null" >
+        job_group_id,
+      </if>
+      <if test="jobStatus != null" >
+        job_status,
+      </if>
+      <if test="jobFeedback != null" >
+        job_feedback,
+      </if>
+      <if test="backupTime != null" >
+        backup_time,
+      </if>
+      <if test="finishTime != null" >
+        finish_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="jobBackId != null" >
+        #{jobBackId,jdbcType=INTEGER},
+      </if>
+      <if test="jobId != null" >
+        #{jobId,jdbcType=INTEGER},
+      </if>
+      <if test="sourceId != null" >
+        #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null" >
+        #{creatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jobComment != null" >
+        #{jobComment,jdbcType=VARCHAR},
+      </if>
+      <if test="isSingle != null" >
+        #{isSingle,jdbcType=TINYINT},
+      </if>
+      <if test="isImportant != null" >
+        #{isImportant,jdbcType=TINYINT},
+      </if>
+      <if test="requiredTime != null" >
+        #{requiredTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cycle != null" >
+        #{cycle,jdbcType=VARCHAR},
+      </if>
+      <if test="jobHandlerId != null" >
+        #{jobHandlerId,jdbcType=VARCHAR},
+      </if>
+      <if test="jobType != null" >
+        #{jobType,jdbcType=VARCHAR},
+      </if>
+      <if test="jobGroupId != null" >
+        #{jobGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="jobStatus != null" >
+        #{jobStatus,jdbcType=INTEGER},
+      </if>
+      <if test="jobFeedback != null" >
+        #{jobFeedback,jdbcType=VARCHAR},
+      </if>
+      <if test="backupTime != null" >
+        #{backupTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null" >
+        #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fun4g.riqin.model.JobBackup" >
+    update job_backup
+    <set >
+      <if test="jobId != null" >
+        job_id = #{jobId,jdbcType=INTEGER},
+      </if>
+      <if test="sourceId != null" >
+        source_id = #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="creatorId != null" >
+        creator_id = #{creatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jobComment != null" >
+        job_comment = #{jobComment,jdbcType=VARCHAR},
+      </if>
+      <if test="isSingle != null" >
+        is_single = #{isSingle,jdbcType=TINYINT},
+      </if>
+      <if test="isImportant != null" >
+        is_important = #{isImportant,jdbcType=TINYINT},
+      </if>
+      <if test="requiredTime != null" >
+        required_time = #{requiredTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cycle != null" >
+        cycle = #{cycle,jdbcType=VARCHAR},
+      </if>
+      <if test="jobHandlerId != null" >
+        job_handler_id = #{jobHandlerId,jdbcType=VARCHAR},
+      </if>
+      <if test="jobType != null" >
+        job_type = #{jobType,jdbcType=VARCHAR},
+      </if>
+      <if test="jobGroupId != null" >
+        job_group_id = #{jobGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="jobStatus != null" >
+        job_status = #{jobStatus,jdbcType=INTEGER},
+      </if>
+      <if test="jobFeedback != null" >
+        job_feedback = #{jobFeedback,jdbcType=VARCHAR},
+      </if>
+      <if test="backupTime != null" >
+        backup_time = #{backupTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishTime != null" >
+        finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where job_back_id = #{jobBackId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fun4g.riqin.model.JobBackup" >
+    update job_backup
+    set job_id = #{jobId,jdbcType=INTEGER},
+      source_id = #{sourceId,jdbcType=INTEGER},
+      creator_id = #{creatorId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      job_comment = #{jobComment,jdbcType=VARCHAR},
+      is_single = #{isSingle,jdbcType=TINYINT},
+      is_important = #{isImportant,jdbcType=TINYINT},
+      required_time = #{requiredTime,jdbcType=TIMESTAMP},
+      cycle = #{cycle,jdbcType=VARCHAR},
+      job_handler_id = #{jobHandlerId,jdbcType=VARCHAR},
+      job_type = #{jobType,jdbcType=VARCHAR},
+      job_group_id = #{jobGroupId,jdbcType=INTEGER},
+      job_status = #{jobStatus,jdbcType=INTEGER},
+      job_feedback = #{jobFeedback,jdbcType=VARCHAR},
+      backup_time = #{backupTime,jdbcType=TIMESTAMP},
+      finish_time = #{finishTime,jdbcType=TIMESTAMP}
+    where job_back_id = #{jobBackId,jdbcType=INTEGER}
+  </update>
+
+</mapper>

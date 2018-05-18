@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fun4g.riqin.iDao.TipsMapper" >
+  <resultMap id="BaseResultMap" type="com.fun4g.riqin.model.Tips" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="icomment" property="icomment" jdbcType="VARCHAR" />
+    <result column="alert_time" property="alertTime" jdbcType="TIMESTAMP" />
+    <result column="alerted" property="alerted" jdbcType="BIT" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="DetailResultMap" type="com.fun4g.riqin.model.Tips" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="icomment" property="icomment" jdbcType="VARCHAR" />
+    <result column="alert_time" property="alertTime" jdbcType="TIMESTAMP" />
+    <result column="alerted" property="alerted" jdbcType="BIT" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <association property="iuser" javaType="com.fun4g.riqin.model.Iuser">
+      <id column="user_id" jdbcType="VARCHAR"  property="id"/>
+      <result property="wxId" jdbcType="VARCHAR"  column="wx_id"/>
+    </association>
+  </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    id, user_id, icomment, alert_time, alerted, insert_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tips
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tips
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fun4g.riqin.model.Tips" >
+    insert into tips (id, user_id, icomment, 
+      alert_time, alerted, insert_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{icomment,jdbcType=VARCHAR}, 
+      #{alertTime,jdbcType=TIMESTAMP}, #{alerted,jdbcType=BIT}, #{insertTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fun4g.riqin.model.Tips" >
+    insert into tips
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="icomment != null" >
+        icomment,
+      </if>
+      <if test="alertTime != null" >
+        alert_time,
+      </if>
+      <if test="alerted != null" >
+        alerted,
+      </if>
+      <if test="insertTime != null" >
+        insert_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="icomment != null" >
+        #{icomment,jdbcType=VARCHAR},
+      </if>
+      <if test="alertTime != null" >
+        #{alertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alerted != null" >
+        #{alerted,jdbcType=BIT},
+      </if>
+      <if test="insertTime != null" >
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fun4g.riqin.model.Tips" >
+    update tips
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="icomment != null" >
+        icomment = #{icomment,jdbcType=VARCHAR},
+      </if>
+      <if test="alertTime != null" >
+        alert_time = #{alertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="alerted != null" >
+        alerted = #{alerted,jdbcType=BIT},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fun4g.riqin.model.Tips" >
+    update tips
+    set user_id = #{userId,jdbcType=VARCHAR},
+      icomment = #{icomment,jdbcType=VARCHAR},
+      alert_time = #{alertTime,jdbcType=TIMESTAMP},
+      alerted = #{alerted,jdbcType=BIT},
+      insert_time = #{insertTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="selectToBeNotifyTask" resultMap="DetailResultMap">
+    select t.*,b.wx_id from tips t join iuser b on t.user_id=b.id
+    where  t.alert_time<![CDATA[<CURRENT_TIMESTAMP()]]> and t.alerted=0
+
+  </select>
+  <select id="selectNotAlertedByUserId" resultMap="BaseResultMap">
+
+SELECT * FROM tips where user_id=#{user_id} and alerted=0 order by alert_time asc;
+  </select>
+
+
+
+</mapper>

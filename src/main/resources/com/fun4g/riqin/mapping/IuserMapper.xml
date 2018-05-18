@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fun4g.riqin.iDao.IuserMapper" >
+  <resultMap id="BaseResultMap" type="com.fun4g.riqin.model.Iuser" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+    <result column="wx_id" property="wxId" jdbcType="VARCHAR" />
+    <result column="authority" property="authority" jdbcType="TINYINT" />
+    <result column="klass" property="klass" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="valid" property="valid" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, pwd, wx_id, authority, klass, title, valid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from iuser
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from iuser
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fun4g.riqin.model.Iuser" >
+    insert into iuser (id, name, pwd, 
+      wx_id, authority, klass, 
+      title, valid)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}, 
+      #{wxId,jdbcType=VARCHAR}, #{authority,jdbcType=TINYINT}, #{klass,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{valid,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fun4g.riqin.model.Iuser" >
+    insert into iuser
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="pwd != null" >
+        pwd,
+      </if>
+      <if test="wxId != null" >
+        wx_id,
+      </if>
+      <if test="authority != null" >
+        authority,
+      </if>
+      <if test="klass != null" >
+        klass,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="valid != null" >
+        valid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="wxId != null" >
+        #{wxId,jdbcType=VARCHAR},
+      </if>
+      <if test="authority != null" >
+        #{authority,jdbcType=TINYINT},
+      </if>
+      <if test="klass != null" >
+        #{klass,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="valid != null" >
+        #{valid,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fun4g.riqin.model.Iuser" >
+    update iuser
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        pwd = #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="wxId != null" >
+        wx_id = #{wxId,jdbcType=VARCHAR},
+      </if>
+      <if test="authority != null" >
+        authority = #{authority,jdbcType=TINYINT},
+      </if>
+      <if test="klass != null" >
+        klass = #{klass,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="valid != null" >
+        valid = #{valid,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fun4g.riqin.model.Iuser" >
+    update iuser
+    set name = #{name,jdbcType=VARCHAR},
+      pwd = #{pwd,jdbcType=VARCHAR},
+      wx_id = #{wxId,jdbcType=VARCHAR},
+      authority = #{authority,jdbcType=TINYINT},
+      klass = #{klass,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      valid = #{valid,jdbcType=TINYINT}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectByWxId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from iuser
+    where wx_id = #{wx_id,jdbcType=VARCHAR} LIMIT 1
+  </select>
+
+  <select id="selectAllValid" resultMap="BaseResultMap"  >
+    select
+    <include refid="Base_Column_List" />
+    from iuser where valid=1 ORDER BY CONVERT( name USING gbk ) COLLATE gbk_chinese_ci asc
+
+  </select>
+</mapper>

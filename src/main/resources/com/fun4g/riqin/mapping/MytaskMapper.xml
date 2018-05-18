@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fun4g.riqin.iDao.MytaskMapper" >
+  <resultMap id="BaseResultMap" type="com.fun4g.riqin.model.Mytask" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="first" property="first" jdbcType="VARCHAR" />
+    <result column="keyword1" property="keyword1" jdbcType="VARCHAR" />
+    <result column="keyword2" property="keyword2" jdbcType="VARCHAR" />
+    <result column="keyword3" property="keyword3" jdbcType="VARCHAR" />
+    <result column="keyword4" property="keyword4" jdbcType="VARCHAR" />
+    <result column="keyword5" property="keyword5" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="template_id" property="templateId" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="work" property="work" jdbcType="VARCHAR" />
+    <result column="ready_time" property="readyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="DetailResultMap" type="com.fun4g.riqin.model.Mytask" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="first" property="first" jdbcType="VARCHAR" />
+    <result column="keyword1" property="keyword1" jdbcType="VARCHAR" />
+    <result column="keyword2" property="keyword2" jdbcType="VARCHAR" />
+    <result column="keyword3" property="keyword3" jdbcType="VARCHAR" />
+    <result column="keyword4" property="keyword4" jdbcType="VARCHAR" />
+    <result column="keyword5" property="keyword5" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="template_id" property="templateId" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="work" property="work" jdbcType="VARCHAR" />
+    <result column="ready_time" property="readyTime" jdbcType="TIMESTAMP" />
+    <association property="iuser" javaType="com.fun4g.riqin.model.Iuser">
+      <id column="user_id" jdbcType="VARCHAR"  property="id"/>
+      <result property="wxId" jdbcType="VARCHAR"  column="wx_id"/>
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, first, keyword1, keyword2, keyword3, keyword4, keyword5, remark, user_id, template_id, 
+    url, " work", ready_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from mytask
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKey2" resultMap="DetailResultMap" parameterType="java.lang.Integer" >
+    select  a.*,b.wx_id
+    from mytask a,iuser b
+    where a.id =  #{id,jdbcType=INTEGER} and a.user_id=b.id
+
+  </select>
+
+  <select id="selectToBeNotifyTask" resultMap="DetailResultMap">
+    select t.*,b.wx_id from mytask t join iuser b on t.user_id=b.id
+    where  t.ready_time<![CDATA[<CURRENT_TIMESTAMP()]]>
+
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from mytask
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fun4g.riqin.model.Mytask" >
+    insert into mytask (id, first, keyword1, 
+      keyword2, keyword3, keyword4, 
+      keyword5, remark, user_id, 
+      template_id, url, work,
+      ready_time)
+    values (#{id,jdbcType=INTEGER}, #{first,jdbcType=VARCHAR}, #{keyword1,jdbcType=VARCHAR}, 
+      #{keyword2,jdbcType=VARCHAR}, #{keyword3,jdbcType=VARCHAR}, #{keyword4,jdbcType=VARCHAR}, 
+      #{keyword5,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{work,jdbcType=VARCHAR}, 
+      #{readyTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fun4g.riqin.model.Mytask" >
+    insert into mytask
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="first != null" >
+        first,
+      </if>
+      <if test="keyword1 != null" >
+        keyword1,
+      </if>
+      <if test="keyword2 != null" >
+        keyword2,
+      </if>
+      <if test="keyword3 != null" >
+        keyword3,
+      </if>
+      <if test="keyword4 != null" >
+        keyword4,
+      </if>
+      <if test="keyword5 != null" >
+        keyword5,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="templateId != null" >
+        template_id,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="work != null" >
+        " work",
+      </if>
+      <if test="readyTime != null" >
+        ready_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="first != null" >
+        #{first,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword1 != null" >
+        #{keyword1,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword2 != null" >
+        #{keyword2,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword3 != null" >
+        #{keyword3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword4 != null" >
+        #{keyword4,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword5 != null" >
+        #{keyword5,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateId != null" >
+        #{templateId,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="work != null" >
+        #{work,jdbcType=VARCHAR},
+      </if>
+      <if test="readyTime != null" >
+        #{readyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fun4g.riqin.model.Mytask" >
+    update mytask
+    <set >
+      <if test="first != null" >
+        first = #{first,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword1 != null" >
+        keyword1 = #{keyword1,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword2 != null" >
+        keyword2 = #{keyword2,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword3 != null" >
+        keyword3 = #{keyword3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword4 != null" >
+        keyword4 = #{keyword4,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword5 != null" >
+        keyword5 = #{keyword5,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateId != null" >
+        template_id = #{templateId,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="work != null" >
+        " work" = #{work,jdbcType=VARCHAR},
+      </if>
+      <if test="readyTime != null" >
+        ready_time = #{readyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fun4g.riqin.model.Mytask" >
+    update mytask
+    set first = #{first,jdbcType=VARCHAR},
+      keyword1 = #{keyword1,jdbcType=VARCHAR},
+      keyword2 = #{keyword2,jdbcType=VARCHAR},
+      keyword3 = #{keyword3,jdbcType=VARCHAR},
+      keyword4 = #{keyword4,jdbcType=VARCHAR},
+      keyword5 = #{keyword5,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      template_id = #{templateId,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      " work" = #{work,jdbcType=VARCHAR},
+      ready_time = #{readyTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

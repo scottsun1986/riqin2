@@ -1,0 +1,63 @@
+ sudo tail -f /var/log/tomcat7/catalina.out
+
+
+delete FROM `job`  where WEEKDAY(required_time) in(5,6) 删除要求周六周日完成的数据
+
+ 我的日清清单： 初始条件是 要求完成人是我
+
+ ((required_time>=CURDATE() and required_time<date_sub(CURDATE()，interval-1 day))
+ or (required_time<CURDATE() and job_status!=2)
+ or (required_time< CURDATE()  and job_status=2 and finish_time>=CURDATE())
+ and job_type='计划任务' and job_handler_id='15335178231'
+
+
+ 1. 计划内的
+     1）要求完成时间是当天的
+     2）要求完成时间是今天之前，但是状态是未完成的
+     3）要求完成时间是今天之前，状态是完成，完成时间是今天的
+     4）计划任务
+     SELECT * FROM `job` where  ((required_time>=CURDATE() and required_time<date_sub(CURDATE(),interval  -1 day))
+      or (required_time<CURDATE() and job_status!=2)
+      or (required_time< CURDATE()  and job_status=2 and finish_time>=CURDATE()))
+      and job_type="计划任务" and job_handler_id="15335178231";
+
+
+ 2. 计划外的
+     1）要求完成时间是当天的
+     2）要求完成时间是今天之前，但是状态是未完成的
+     3）要求完成时间是今天之前，状态是完成，完成时间是今天的
+     4）临时任务
+     SELECT * FROM `job` where  ((required_time>=CURDATE() and required_time<date_sub(CURDATE(),interval  -1 day))
+      or (required_time<CURDATE() and job_status!=2)
+      or (required_time< CURDATE()  and job_status=2 and finish_time>=CURDATE()))
+      and job_type="临时任务" and job_handler_id="15335178231";
+ 3. 一周内的
+     1）首先将未来七天的范围定下来，需要一个辅助函数
+     2）将要求完成时间在这个区间的取出来即可
+      SELECT * FROM `job` where  (required_time>=date_sub(CURDATE(),interval  -1 day) and required_time<date_sub(CURDATE(),interval  -8 day)) and
+      job_handler_id="15335178231"
+
+
+
+ 4.查询统计
+ SELECT a.job_id,h.name,case a.job_status when 0 then '未处理' when 1 then  '处理中' else '已完成' END as job_status,a.job_comment,a.job_type,s.name,DATE_FORMAT(a.backup_time,'%Y-%m-%d') FROM `job_backup` a join iuser h on a.job_handler_id=h.id join source s on a.source_id=s.source_id where backup_time>='2016-04-29 00:00:00' and backup_time<'2016-05-03 00:00:00'
+
+ ORDER BY DATE_FORMAT(a.backup_time,'%Y-%m-%d') desc, CONVERT( h.name USING gbk ) COLLATE gbk_chinese_ci asc,a.job_type desc,s.source_id desc;
+
+ 5.生成EXCEL并发邮件的配置是定制的，只有linux下是该目录结构，后面如果改WINDOWS的话还是要修改的
+
+ 6. 数据统计微信URL:https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx45b6ea3d9f9eb681&redirect_uri=http://i.lebeacon.cn/riqin/wx_login&response_type=code&scope=snsapi_base&state=manage#wechat_redirect
+
+
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxc62d0e8e8641f451&redirect_uri=http://i.lebeacon.cn/riqin/wx_login&response_type=code&scope=snsapi_base&state=myjob#wechat_redirect
+
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxc62d0e8e8641f451&redirect_uri=http://i.lebeacon.cn/riqin/wx_login&response_type=code&scope=snsapi_base&state=newtip#wechat_redirect
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxc62d0e8e8641f451&redirect_uri=http://i.lebeacon.cn/riqin/wx_login&response_type=code&scope=snsapi_base&state=mytips#wechat_redirect
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx403cee4264452cf7&redirect_uri=http://scottsun.ittun.com/riqin/wx_login&response_type=code&scope=snsapi_base&state=newtip#wechat_redirect
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx403cee4264452cf7&redirect_uri=http://scottsun.ittun.com/riqin/wx_login&response_type=code&scope=snsapi_base&state=tips#wechat_redirect
+
+ 更换公众号只需要更换 OAuthapi中的 APP_ID,SECRET,DOMAIN三个

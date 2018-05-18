@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="banwagong">
+    <serverData>
+      <paths name="banwagong">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/var/lib/tomcat7/webapps/riqin2" local="F:/apache-tomcat-8.0.18/webapps/riqin2" web="riqin2" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

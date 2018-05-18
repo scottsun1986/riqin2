@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fun4g.riqin.iDao.JobMapper">
+    <resultMap id="BaseResultMap" type="com.fun4g.riqin.model.Job">
+        <id column="job_id" property="jobId" jdbcType="INTEGER"/>
+        <result column="source_id" property="sourceId" jdbcType="INTEGER"/>
+        <result column="creator_id" property="creatorId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="job_comment" property="jobComment" jdbcType="VARCHAR"/>
+        <result column="is_single" property="isSingle" jdbcType="TINYINT"/>
+        <result column="is_important" property="isImportant" jdbcType="TINYINT"/>
+        <result column="required_time" property="requiredTime" jdbcType="TIMESTAMP"/>
+        <result column="cycle" property="cycle" jdbcType="VARCHAR"/>
+        <result column="job_handler_id" property="jobHandlerId" jdbcType="VARCHAR"/>
+        <result column="job_type" property="jobType" jdbcType="VARCHAR"/>
+        <result column="job_group_id" property="jobGroupId" jdbcType="INTEGER"/>
+        <result column="job_status" property="jobStatus" jdbcType="INTEGER"/>
+        <result column="job_feedback" property="jobFeedback" jdbcType="VARCHAR"/>
+        <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP"/>
+        <association javaType="com.fun4g.riqin.model.Source" property="jobSource">
+
+            <id column="source_id" jdbcType="INTEGER" property="sourceId"/>
+            <result column="name" jdbcType="VARCHAR" property="name"/>
+
+        </association>
+    </resultMap>
+
+    <resultMap id="DetailResultMap" type="com.fun4g.riqin.model.Job">
+        <id column="job_id" property="jobId" jdbcType="INTEGER"/>
+        <result column="source_id" property="sourceId" jdbcType="INTEGER"/>
+        <result column="creator_id" property="creatorId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="job_comment" property="jobComment" jdbcType="VARCHAR"/>
+        <result column="is_single" property="isSingle" jdbcType="TINYINT"/>
+        <result column="is_important" property="isImportant" jdbcType="TINYINT"/>
+        <result column="required_time" property="requiredTime" jdbcType="TIMESTAMP"/>
+        <result column="cycle" property="cycle" jdbcType="VARCHAR"/>
+        <result column="job_handler_id" property="jobHandlerId" jdbcType="VARCHAR"/>
+        <result column="job_type" property="jobType" jdbcType="VARCHAR"/>
+        <result column="job_group_id" property="jobGroupId" jdbcType="INTEGER"/>
+        <result column="job_status" property="jobStatus" jdbcType="INTEGER"/>
+        <result column="job_feedback" property="jobFeedback" jdbcType="VARCHAR"/>
+        <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP"/>
+        <association javaType="com.fun4g.riqin.model.Source" property="jobSource">
+
+            <id column="source_id" jdbcType="INTEGER" property="sourceId"/>
+            <result column="name" jdbcType="VARCHAR" property="name"/>
+
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+    job_id, source_id, creator_id, create_time, job_comment, is_single, required_time, 
+    cycle, job_handler_id,is_important, job_type, job_group_id, job_status, job_feedback, finish_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="DetailResultMap" parameterType="java.lang.Integer">
+    select 
+   a.job_id, a.source_id, a.creator_id, a.create_time, a.job_comment, a.is_single, a.required_time,
+    a.cycle, a.job_handler_id,a.is_important, a.job_type, a.job_group_id, a.job_status, a.job_feedback, a.finish_time,t.name
+    from job a,source t
+    where a.job_id = #{jobId,jdbcType=INTEGER} and a.source_id=t.source_id
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from job
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.fun4g.riqin.model.Job">
+    insert into job (job_id, source_id, creator_id, 
+      create_time, job_comment, is_single, is_important,
+      required_time, cycle, job_handler_id, 
+      job_type, job_group_id, job_status, 
+      job_feedback, finish_time)
+    values (#{jobId,jdbcType=INTEGER}, #{sourceId,jdbcType=INTEGER}, #{creatorId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{jobComment,jdbcType=VARCHAR}, #{isSingle,jdbcType=TINYINT},#{isImportant,jdbcType=TINYINT},
+      #{requiredTime,jdbcType=TIMESTAMP}, #{cycle,jdbcType=VARCHAR}, #{jobHandlerId,jdbcType=VARCHAR}, 
+      #{jobType,jdbcType=VARCHAR}, #{jobGroupId,jdbcType=INTEGER}, #{jobStatus,jdbcType=INTEGER}, 
+      #{jobFeedback,jdbcType=VARCHAR}, #{finishTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.fun4g.riqin.model.Job">
+        insert into job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                job_id,
+            </if>
+            <if test="sourceId != null">
+                source_id,
+            </if>
+            <if test="creatorId != null">
+                creator_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="jobComment != null">
+                job_comment,
+            </if>
+            <if test="isSingle != null">
+                is_single,
+            </if>
+            <if test="isImportant!= null">
+                is_important,
+            </if>
+            <if test="requiredTime != null">
+                required_time,
+            </if>
+            <if test="cycle != null">
+                cycle,
+            </if>
+            <if test="jobHandlerId != null">
+                job_handler_id,
+            </if>
+            <if test="jobType != null">
+                job_type,
+            </if>
+            <if test="jobGroupId != null">
+                job_group_id,
+            </if>
+            <if test="jobStatus != null">
+                job_status,
+            </if>
+            <if test="jobFeedback != null">
+                job_feedback,
+            </if>
+            <if test="finishTime != null">
+                finish_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                #{jobId,jdbcType=INTEGER},
+            </if>
+            <if test="sourceId != null">
+                #{sourceId,jdbcType=INTEGER},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="jobComment != null">
+                #{jobComment,jdbcType=VARCHAR},
+            </if>
+            <if test="isSingle != null">
+                #{isSingle,jdbcType=TINYINT},
+            </if>
+            <if test="isImportant != null">
+                #{isImportant,jdbcType=TINYINT},
+            </if>
+            <if test="requiredTime != null">
+                #{requiredTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cycle != null">
+                #{cycle,jdbcType=VARCHAR},
+            </if>
+            <if test="jobHandlerId != null">
+                #{jobHandlerId,jdbcType=VARCHAR},
+            </if>
+            <if test="jobType != null">
+                #{jobType,jdbcType=VARCHAR},
+            </if>
+            <if test="jobGroupId != null">
+                #{jobGroupId,jdbcType=INTEGER},
+            </if>
+            <if test="jobStatus != null">
+                #{jobStatus,jdbcType=INTEGER},
+            </if>
+            <if test="jobFeedback != null">
+                #{jobFeedback,jdbcType=VARCHAR},
+            </if>
+            <if test="finishTime != null">
+                #{finishTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fun4g.riqin.model.Job">
+        update job
+        <set>
+            <if test="sourceId != null">
+                source_id = #{sourceId,jdbcType=INTEGER},
+            </if>
+            <if test="creatorId != null">
+                creator_id = #{creatorId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="jobComment != null">
+                job_comment = #{jobComment,jdbcType=VARCHAR},
+            </if>
+            <if test="isSingle != null">
+                is_single = #{isSingle,jdbcType=TINYINT},
+            </if>
+            <if test="isImportant != null">
+                is_important = #{isImportant,jdbcType=TINYINT},
+            </if>
+            <if test="requiredTime != null">
+                required_time = #{requiredTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cycle != null">
+                cycle = #{cycle,jdbcType=VARCHAR},
+            </if>
+            <if test="jobHandlerId != null">
+                job_handler_id = #{jobHandlerId,jdbcType=VARCHAR},
+            </if>
+            <if test="jobType != null">
+                job_type = #{jobType,jdbcType=VARCHAR},
+            </if>
+            <if test="jobGroupId != null">
+                job_group_id = #{jobGroupId,jdbcType=INTEGER},
+            </if>
+            <if test="jobStatus != null">
+                job_status = #{jobStatus,jdbcType=INTEGER},
+            </if>
+            <if test="jobFeedback != null">
+                job_feedback = #{jobFeedback,jdbcType=VARCHAR},
+            </if>
+            <if test="finishTime != null">
+                finish_time = #{finishTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where job_id = #{jobId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fun4g.riqin.model.Job">
+    update job
+    set source_id = #{sourceId,jdbcType=INTEGER},
+      creator_id = #{creatorId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      job_comment = #{jobComment,jdbcType=VARCHAR},
+      is_single = #{isSingle,jdbcType=TINYINT},
+       is_important = #{isImportant,jdbcType=TINYINT},
+      required_time = #{requiredTime,jdbcType=TIMESTAMP},
+      cycle = #{cycle,jdbcType=VARCHAR},
+      job_handler_id = #{jobHandlerId,jdbcType=VARCHAR},
+      job_type = #{jobType,jdbcType=VARCHAR},
+      job_group_id = #{jobGroupId,jdbcType=INTEGER},
+      job_status = #{jobStatus,jdbcType=INTEGER},
+      job_feedback = #{jobFeedback,jdbcType=VARCHAR},
+      finish_time = #{finishTime,jdbcType=TIMESTAMP}
+    where job_id = #{jobId,jdbcType=INTEGER}
+  </update>
+    <select id="selectByHandlerIdAndJobType" resultMap="BaseResultMap">
+
+    SELECT * FROM job  where  <![CDATA[((required_time>=CURDATE() and required_time<date_sub(CURDATE(),interval  -1 day))
+    or (required_time<CURDATE() and job_status!=2)
+    or (required_time< CURDATE()  and job_status=2 and finish_time>=CURDATE()))]]>
+    and job_type=#{job_type} and job_handler_id=#{job_handler_id};
+
+
+  </select>
+
+    <select id="selectNext7DayJobsByHandlerId" resultMap="BaseResultMap">
+
+    SELECT * FROM job where  <![CDATA[(required_time>=date_sub(CURDATE(),interval  -1 day) and required_time<date_sub(CURDATE(),interval  -8 day)) and
+    ]]> job_handler_id=#{job_handler_id} and is_single=1;
+
+
+  </select>
+
+</mapper>
