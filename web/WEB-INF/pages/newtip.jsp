@@ -1,5 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.fun4g.riqin.util.BeanGetter" %>
+<%@ page import="com.fun4g.riqin.iDao.IuserMapper" %>
 <%--
   Created by IntelliJ IDEA.
   User: Administrator
@@ -32,7 +34,24 @@
         <div class="form-group">
             <label class="col-sm-2 control-label">要提醒的人的ID(手机号码):</label>
             <div class="col-sm-10">
-                <input name="handler" class="form-control" placeholder="默认提醒自己">
+               <!-- <input name="handler" class="form-control" placeholder="默认提醒自己">
+-->
+                <select name="jobHandlerIds" class="form-control selectpicker" multiple required>
+
+                    <c:forEach items="${userList}" var="tempUser">
+                        <c:choose>
+                            <c:when test="${tempUser.name=='默认为自己'}">
+                                <option value="${tempUser.id}" selected>${tempUser.name}</option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${tempUser.id}">${tempUser.name}</option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+
+
+                </select>
+
             </div>
         </div>
 
