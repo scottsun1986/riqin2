@@ -153,7 +153,8 @@ public class MainController {
                     model.addAttribute("notAlertedTips", notAlertedTips);
                     return "mytips";
                 } else if (state.equals("newtip")) {
-                    return "newtip";
+                //    return "newtip";
+                  return   "redirect:/toAddTipsPage";
                 }
             }
         }
@@ -464,12 +465,21 @@ public class MainController {
         tempTips.setAlerted(false);
         tempTips.setAlertTime(DateHelper.parseDate(alertTime));
         tempTips.setIcomment(icomment);
-        if (handler != null && (!handler.trim().equals(""))) {
-            tempTips.setUserId(handler.trim());
-        } else
-            tempTips.setUserId(currentUser.getId());
-        tempTips.setInsertTime(DateHelper.getCurrentYYYYMMDDHHMMSS());
-        tipsMapper.insert(tempTips);
+        String[] jobHandlerIds = request.getParameterValues("jobHandlerIds");
+        for (int i = 0; i < jobHandlerIds.length; i++) {
+            //tempJob.setJobHandlerId(jobHandlerIds[i]);
+            tempTips.setUserId(jobHandlerIds[i]);
+            tempTips.setInsertTime(DateHelper.getCurrentYYYYMMDDHHMMSS());
+            tipsMapper.insert(tempTips);
+
+        }
+
+//        if (handler != null && (!handler.trim().equals(""))) {
+//            tempTips.setUserId(handler.trim());
+//        } else
+//            tempTips.setUserId(currentUser.getId());
+//        tempTips.setInsertTime(DateHelper.getCurrentYYYYMMDDHHMMSS());
+//        tipsMapper.insert(tempTips);
 
         return "addTipsSuccess";
 
@@ -477,10 +487,31 @@ public class MainController {
 
     }
 
+//    @RequestMapping(value = "/toAddTipsPage", method = RequestMethod.GET)
+//    public String toAddTipsPage(ModelMap model, @ModelAttribute("currentUser") Iuser currentUser) {
+//
+//        List<Iuser> userList = iuserMapper.selectAllValid();
+//        currentUser.setName("默认为自己");
+//        //fdsfaads daf da
+//        userList.add(0, currentUser);
+//        model.addAttribute("userList", userList);
+//
+//        return "newtip";
+//
+////s
+//
+//    }
+
     @RequestMapping(value = "/toAddTipsPage", method = RequestMethod.GET)
     public String toAddTipsPage(ModelMap model, @ModelAttribute("currentUser") Iuser currentUser) {
+        model.addAttribute("sourceList", sourceMapper.selectAllValid());
+        List<Iuser> userList = iuserMapper.selectAllValid();
+        currentUser.setName("默认为自己");
+        userList.add(0, currentUser);
+        model.addAttribute("userList", userList);
 
         return "newtip";
+
 
 //s
 
