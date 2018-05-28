@@ -125,9 +125,39 @@ public class MyTestServiceImpl implements IMyTestService {
     /**
      * 该方法用来更新TOKEN的
      */
-    @Scheduled(cron = "0 0 1 * * ? ")/*每天1点生成EXCEL*/
+    @Scheduled(cron = "0 0 1 * * MON")/*每天1点生成EXCEL*/
     //@Scheduled(cron = "0 53 15 * * ? ")
     public void generateExcel() {
+        // 测试学生
+        ExportExcel<JobBackup> ex = new ExportExcel<JobBackup>();
+        String[] headers =
+                {"姓名", "任务类型", "任务说明", "完成情况", "反馈", "是否月度关注", "日期", "任务来源"};
+        List<JobBackup> dataset = ((JobBackupMapper) BeanGetter.getBean("jobBackupMapper")).selectByBackupTime(DateHelper.parseDateYMD(DateHelper.parseSimpleString(DayHelper.getLastTuesday())), DateHelper.parseDateYMD(DateHelper.parseSimpleString(DayHelper.getTomorrowDay())));
+
+
+        try {
+
+            OutputStream out = new FileOutputStream("/var/lib/tomcat7/webapps/riqin2/" + DateHelper.getCurrentYYYYMMDD() + ".xls");
+
+            ex.exportExcel(headers, dataset, out);
+
+            out.close();
+
+
+            System.out.println("excel导出成功！");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    @Scheduled(cron = "0 0 1 * * TUE-SAT")/*每天1点生成EXCEL*/
+    //@Scheduled(cron = "0 53 15 * * ? ")
+    public void generateExcel2() {
         // 测试学生
         ExportExcel<JobBackup> ex = new ExportExcel<JobBackup>();
         String[] headers =
@@ -154,12 +184,13 @@ public class MyTestServiceImpl implements IMyTestService {
     }
 
 
+
     /**
      * 该方法用来更新TOKEN的
      */
 
     // @Scheduled(cron = "1 05 10 ? * TUE-SAT")
-    @Scheduled(cron = "1 45 8 ? * TUE-SAT")
+    @Scheduled(cron = "1 45 8 ? * MON")
     // @Scheduled(cron = "1 55 15 ? * TUE-SAT")
     public void sendMail() {
         try {
@@ -175,16 +206,63 @@ public class MyTestServiceImpl implements IMyTestService {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage,
                     true, "utf-8");
 
-            // 设置收件人，寄件人
+            //todo-- 设置收件人，寄件人,,,这块等测试OK了，要发给所有人的。
 
-            messageHelper.setTo(new String[]{"sunzhiqiang.nj@jsoa.net", "scottsun@189.cn"});
+            messageHelper.setTo(new String[]{"baibing@chinatelecom.cn","wuyh@chinatelecom.cn","yangqf@chinatelecom.cn","zhangxiyue@chinatelecom.cn","luzhd@chinatelecom.cn","wangying@chinatelecom.cn","chenxj@chinatelecom.cn","luyf@chinatelecom.cn","kongds@chinatelecom.cn","dongkh@chinatelecom.cn"});
             //      messageHelper.setTo(new String[]{ "sunzhiqiang.nj@jsoa.net", "scottsun@189.cn"});
 
             messageHelper.setFrom("scottsun.nj@gmail.com");
-            messageHelper.setSubject("日清统计（" + DateHelper.parseSimpleString(DayHelper.getYesDay()) + ")");
+            messageHelper.setSubject("上周日清统计（" + DateHelper.parseSimpleString(DayHelper.getYesDay()) + ")");
             // true 表示启动HTML格式的邮件
             messageHelper.setText(
-                    " 昨日日清,请查收！",
+                    " 上周日清统计,请查收！",
+                    false);
+            File f = new File("/var/lib/tomcat7/webapps/riqin2/" + DateHelper.getCurrentYYYYMMDD() + ".xls");
+            // File f= new File("F:\\apache-tomcat-8.0.18\\webapps\\riqin\\2016-08-18.xls");
+
+            FileSystemResource file = new FileSystemResource(f);
+            // 这里的方法调用和插入图片是不同的。
+            messageHelper.addAttachment(MimeUtility.encodeWord(new String(("riqin(" + DateHelper.parseSimpleString(DayHelper.getYesDay()) + ").xls").getBytes(), "GBK")), file);
+
+
+            // 发送邮件
+            am.getSenderImpl().send(mailMessage);
+
+            System.out.println("mail sent!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // @Scheduled(cron = "1 05 10 ? * TUE-SAT")
+    @Scheduled(cron = "1 45 8 ? * TUE-SAT")
+    // @Scheduled(cron = "1 55 15 ? * TUE-SAT")
+    public void sendMail2() {
+        try {
+            System.out.println("sent at" + DateHelper.getCurrentYYYYMMDDHHMMSS());
+            AttachedFileMail am = (AttachedFileMail) BeanGetter.getBean("attachedFileMail");
+
+            // 设定mail server
+            //senderImpl.setHost("smtp.163.com");
+            // 建立邮件消息,发送简单邮件和html邮件的区别
+            MimeMessage mailMessage = am.getSenderImpl().createMimeMessage();
+            // 注意这里的boolean,等于真的时候才能嵌套图片，在构建MimeMessageHelper时候，所给定的值是true表示启用，
+            // multipart模式 为true时发送附件 可以设置html格式
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage,
+                    true, "utf-8");
+
+            // 设置收件人，寄件人
+        //    messageHelper.setTo(new String[]{"baibing@chinatelecom.cn","wuyh@chinatelecom.cn","yangqf@chinatelecom.cn","zhangxiyue@chinatelecom.cn","luzhd@chinatelecom.cn","wangying@chinatelecom.cn","chenxj@chinatelecom.cn","luyf@chinatelecom.cn","kongds@chinatelecom.cn","dongkh@chinatelecom.cn"});
+
+            messageHelper.setTo(new String[]{"baibing@chinatelecom.cn","wuyh@chinatelecom.cn"});
+            //      messageHelper.setTo(new String[]{ "sunzhiqiang.nj@jsoa.net", "scottsun@189.cn"});
+
+            messageHelper.setFrom("scottsun.nj@gmail.com");
+            messageHelper.setSubject("昨日日清统计（" + DateHelper.parseSimpleString(DayHelper.getYesDay()) + ")");
+            // true 表示启动HTML格式的邮件
+            messageHelper.setText(
+                    " 昨日日清统计,请查收！",
                     false);
             File f = new File("/var/lib/tomcat7/webapps/riqin2/" + DateHelper.getCurrentYYYYMMDD() + ".xls");
             // File f= new File("F:\\apache-tomcat-8.0.18\\webapps\\riqin\\2016-08-18.xls");
